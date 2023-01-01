@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -94,8 +95,7 @@ public class CarControllerTest {
          *   below (the vehicle will be the first in the list).
          */
         Car car = getCar();
-        mvc.perform(get(new URI("/cars"))
-                        .accept(MediaType.APPLICATION_JSON_UTF8))
+        mvc.perform(get(new URI("/cars")).accept(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(content()
                         .string(containsString("\"model\":\"" + car.getDetails().getModel())))
                 .andReturn();
@@ -113,11 +113,10 @@ public class CarControllerTest {
          */
         Car car = getCar();
         car.setId(1L);
-        mvc.perform(get(new URI("/cars/"+car.getId()))
-                .accept(MediaType.APPLICATION_JSON_UTF8))
-            .andExpect(content()
-                .string(containsString("\"model\":\"" + car.getDetails().getModel())))
-            .andReturn();
+        mvc.perform(get(new URI("/cars/" + car.getId())).accept(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content()
+                        .string(containsString("\"model\":\"" + car.getDetails().getModel())))
+                .andReturn();
     }
 
     /**
@@ -133,10 +132,25 @@ public class CarControllerTest {
          */
         Car car = getCar();
         car.setId(1L);
-        mvc.perform(delete(new URI("/cars/"+car.getId()))
-                .accept(MediaType.APPLICATION_JSON_UTF8))
-            .andExpect(status().isNoContent())
-            .andReturn();
+        mvc.perform(delete(new URI("/cars/" + car.getId())).accept(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isNoContent())
+                .andReturn();
+    }
+
+    @Test
+    public void updateCar() throws Exception {
+        Car car = getCar();
+        car.setId(2L);
+        Long newId = 1L;
+
+        mvc.perform(put(new URI("/cars/" + car.getId()))
+                        .content(String.valueOf(newId))
+                        .content(json.write(car).getJson())
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("\"id\":"+"1")))
+                .andReturn();
     }
 
     /**
