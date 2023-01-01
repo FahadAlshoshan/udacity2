@@ -1,5 +1,7 @@
 package com.udacity.vehicles.client.maps;
 
+import com.udacity.vehicles.domain.car.Car;
+
 /**
  * Declares a class to store an address, city, state and zip code.
  */
